@@ -1,0 +1,55 @@
+erDiagram
+  USER ||--o{ TEAM : leads
+  USER ||--o{ TEAM : member
+  TEAM ||--o{ PAYMENT : pays
+  TEAM ||--o| SUBMISSION : submits
+  USER ||--o{ SUPPORT_TICKET : opens
+  USER ||--o{ CHATBOT_LOG : chats
+  USER ||--o| CAMPUS_AMBASSADOR : enrolls
+  USER ||--o{ AUDIT_LOG : acts
+
+  USER {
+    string userId
+    string role
+    string name
+    string email
+    string mobile
+    string discordId
+    string avatar
+  }
+  TEAM {
+    string teamId
+    string teamName
+    string category
+    string paymentStatus
+    boolean discordVerified
+  }
+  PAYMENT {
+    string transactionId
+    number amount
+    string status
+    string razorpayOrderId
+  }
+  SUBMISSION {
+    string githubLink
+    string pptUrl
+    string demoVideo
+    string apkBuild
+  }
+  SUPPORT_TICKET {
+    string ticketId
+    string category
+    string status
+  }
+  CHATBOT_LOG {
+    string message
+    string response
+  }
+  CAMPUS_AMBASSADOR {
+    string referralCode
+    number points
+  }
+  AUDIT_LOG {
+    string action
+    string target
+  }

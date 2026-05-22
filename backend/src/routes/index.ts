@@ -1,0 +1,30 @@
+import { Router } from "express";
+import authRoutes from "./authRoutes";
+import teamRoutes from "./teamRoutes";
+import paymentRoutes from "./paymentRoutes";
+import submissionRoutes from "./submissionRoutes";
+import announcementRoutes from "./announcementRoutes";
+import sponsorRoutes from "./sponsorRoutes";
+import supportRoutes from "./supportRoutes";
+import chatbotRoutes from "./chatbotRoutes";
+import campusRoutes from "./campusRoutes";
+import adminRoutes from "./adminRoutes";
+import discordRoutes from "./discordRoutes";
+import userRoutes from "./userRoutes";
+import publicRoutes from "./publicRoutes";
+
+export const router = Router();
+
+router.use("/auth", authRoutes);
+router.use("/teams", teamRoutes);
+router.use("/payments", paymentRoutes);
+router.use("/submissions", submissionRoutes);
+router.use("/announcements", announcementRoutes);
+router.use("/sponsors", sponsorRoutes);
+router.use("/support", supportRoutes);
+router.use("/chatbot", chatbotRoutes);
+router.use("/campus", campusRoutes);
+router.use("/admin", adminRoutes);
+router.use("/discord", discordRoutes);
+router.use("/users", userRoutes);
+router.use("/public", publicRoutes);

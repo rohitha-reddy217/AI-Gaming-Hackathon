@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: incuxai-backend
+    env: node
+    plan: standard
+    rootDir: backend
+    buildCommand: npm install && npm run build
+    startCommand: npm run start
+    autoDeploy: true

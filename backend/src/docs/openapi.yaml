@@ -1,0 +1,599 @@
+openapi: 3.0.3
+info:
+  title: IncuXai API
+  version: 1.0.0
+servers:
+  - url: /api
+paths:
+  /health:
+    get:
+      summary: Health check
+      responses:
+        "200":
+          description: OK
+  /auth/otp/send:
+    post:
+      summary: Send login OTP
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OtpSend"
+      responses:
+        "200":
+          description: OTP sent
+  /auth/otp/verify:
+    post:
+      summary: Verify OTP and login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OtpVerify"
+      responses:
+        "200":
+          description: Login success
+  /auth/me:
+    get:
+      summary: Get current user
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: User profile
+  /auth/csrf:
+    get:
+      summary: Issue CSRF token
+      responses:
+        "200":
+          description: CSRF token
+  /auth/admin/login:
+    post:
+      summary: Admin login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        "200":
+          description: JWT token
+  /teams:
+    post:
+      summary: Create team
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TeamCreate"
+      responses:
+        "200":
+          description: Team created
+  /teams/me:
+    get:
+      summary: Get my team
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Team data
+  /teams/{teamId}:
+    patch:
+      summary: Update team
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: teamId
+          schema:
+            type: string
+          required: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TeamUpdate"
+      responses:
+        "200":
+          description: Team updated
+  /teams/{teamId}/members:
+    post:
+      summary: Add team member
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: teamId
+          schema:
+            type: string
+          required: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TeamMember"
+      responses:
+        "200":
+          description: Member added
+  /payments/order:
+    post:
+      summary: Create Razorpay order
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PaymentOrder"
+      responses:
+        "200":
+          description: Order created
+  /payments/{teamId}:
+    get:
+      summary: List team payments
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: teamId
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Payments list
+  /payments/webhook:
+    post:
+      summary: Razorpay webhook
+      responses:
+        "200":
+          description: Webhook processed
+  /submissions:
+    post:
+      summary: Submit project
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/SubmissionRequest"
+      responses:
+        "200":
+          description: Submission saved
+  /announcements:
+    get:
+      summary: List announcements
+      responses:
+        "200":
+          description: List
+    post:
+      summary: Create announcement
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Announcement"
+      responses:
+        "200":
+          description: Created
+  /sponsors:
+    get:
+      summary: List sponsors
+      responses:
+        "200":
+          description: List
+    post:
+      summary: Create sponsor
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Sponsor"
+      responses:
+        "200":
+          description: Created
+  /sponsors/analytics:
+    get:
+      summary: Sponsor analytics
+      responses:
+        "200":
+          description: Analytics
+  /support:
+    post:
+      summary: Create support ticket
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SupportTicket"
+      responses:
+        "200":
+          description: Created
+  /support/{ticketId}/reply:
+    post:
+      summary: Reply to support ticket
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: ticketId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SupportReply"
+      responses:
+        "200":
+          description: Updated
+  /chatbot:
+    post:
+      summary: Chat with AI assistant
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Chatbot"
+      responses:
+        "200":
+          description: Response
+  /campus/me:
+    get:
+      summary: Campus ambassador profile
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Profile
+  /campus/leaderboard:
+    get:
+      summary: Campus ambassador leaderboard
+      responses:
+        "200":
+          description: Leaderboard
+  /admin/overview:
+    get:
+      summary: Admin overview metrics
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Metrics
+  /admin/registration-trends:
+    get:
+      summary: Registration trends
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Trends
+  /admin/category-distribution:
+    get:
+      summary: Category distribution
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Distribution
+  /admin/users:
+    get:
+      summary: List users
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Users
+  /admin/teams:
+    get:
+      summary: List teams
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Teams
+  /admin/payments:
+    get:
+      summary: List payments
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Payments
+  /admin/exports/users.csv:
+    get:
+      summary: Export users CSV
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: CSV
+  /admin/exports/users.xlsx:
+    get:
+      summary: Export users Excel
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: XLSX
+  /admin/exports/teams.csv:
+    get:
+      summary: Export teams CSV
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: CSV
+  /admin/exports/teams.xlsx:
+    get:
+      summary: Export teams Excel
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: XLSX
+  /admin/exports/payments.csv:
+    get:
+      summary: Export payments CSV
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: CSV
+  /admin/exports/payments.xlsx:
+    get:
+      summary: Export payments Excel
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: XLSX
+  /admin/email/broadcast:
+    post:
+      summary: Email broadcast
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                subject:
+                  type: string
+                message:
+                  type: string
+      responses:
+        "200":
+          description: Broadcast sent
+  /admin/chatbot/logs:
+    get:
+      summary: Chatbot logs
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Logs
+  /discord/verify:
+    post:
+      summary: Verify Discord and assign roles
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DiscordVerify"
+      responses:
+        "200":
+          description: Verified
+  /discord/feed:
+    get:
+      summary: Discord announcement feed
+      responses:
+        "200":
+          description: Feed
+  /public/stats:
+    get:
+      summary: Public statistics
+      responses:
+        "200":
+          description: Stats
+  /users/me:
+    patch:
+      summary: Update profile
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserUpdate"
+      responses:
+        "200":
+          description: Updated
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    OtpSend:
+      type: object
+      required: [email]
+      properties:
+        email:
+          type: string
+    OtpVerify:
+      type: object
+      required: [email, code, name, role]
+      properties:
+        email:
+          type: string
+        code:
+          type: string
+        name:
+          type: string
+        role:
+          type: string
+        mobile:
+          type: string
+    TeamCreate:
+      type: object
+      required: [teamName, category, projectDetails]
+      properties:
+        teamName:
+          type: string
+        category:
+          type: string
+        projectDetails:
+          type: object
+          properties:
+            title:
+              type: string
+            theme:
+              type: string
+            techStack:
+              type: array
+              items:
+                type: string
+            description:
+              type: string
+    TeamUpdate:
+      type: object
+      properties:
+        teamName:
+          type: string
+        projectDetails:
+          type: object
+    TeamMember:
+      type: object
+      properties:
+        email:
+          type: string
+    PaymentOrder:
+      type: object
+      required: [teamId]
+      properties:
+        teamId:
+          type: string
+    SubmissionRequest:
+      type: object
+      properties:
+        teamId:
+          type: string
+        githubLink:
+          type: string
+        demoVideo:
+          type: string
+        ppt:
+          type: string
+          format: binary
+        apk:
+          type: string
+          format: binary
+        zip:
+          type: string
+          format: binary
+        demo:
+          type: string
+          format: binary
+    Announcement:
+      type: object
+      required: [title, content, visibility]
+      properties:
+        title:
+          type: string
+        content:
+          type: string
+        visibility:
+          type: string
+    Sponsor:
+      type: object
+      required: [name, sponsorTier, logo]
+      properties:
+        name:
+          type: string
+        sponsorTier:
+          type: string
+        logo:
+          type: string
+        links:
+          type: array
+          items:
+            type: string
+    SupportTicket:
+      type: object
+      required: [category, message]
+      properties:
+        category:
+          type: string
+        message:
+          type: string
+    SupportReply:
+      type: object
+      required: [message, sender]
+      properties:
+        message:
+          type: string
+        sender:
+          type: string
+    Chatbot:
+      type: object
+      required: [message]
+      properties:
+        message:
+          type: string
+        history:
+          type: array
+          items:
+            type: object
+    DiscordVerify:
+      type: object
+      required: [code]
+      properties:
+        code:
+          type: string
+    UserUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+        mobile:
+          type: string
+        avatar:
+          type: string
