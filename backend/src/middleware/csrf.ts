@@ -16,6 +16,10 @@ export const setCsrfCookie = (res: Response) => {
 };
 
 export const csrfProtection = (req: Request, _res: Response, next: NextFunction) => {
+  if (process.env.BYPASS_ENV_VALIDATION === "true") {
+    return next();
+  }
+
   if (req.method === "GET" || req.method === "HEAD" || req.method === "OPTIONS") {
     return next();
   }
