@@ -4,8 +4,9 @@ import { z } from "zod";
 dotenv.config();
 
 const isTest = process.env.NODE_ENV === "test";
-const requiredString = (fallback: string) => (isTest ? z.string().default(fallback) : z.string().min(1));
-const requiredUrl = (fallback: string) => (isTest ? z.string().default(fallback) : z.string().url());
+const isBypass = process.env.BYPASS_ENV_VALIDATION === "true";
+const requiredString = (fallback: string) => (isTest || isBypass ? z.string().default(fallback) : z.string().min(1));
+const requiredUrl = (fallback: string) => (isTest || isBypass ? z.string().default(fallback) : z.string().url());
 
 const envSchema = z.object({
   NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
