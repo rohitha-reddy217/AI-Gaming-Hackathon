@@ -1,5 +1,6 @@
 import { Resend } from "resend";
 import nodemailer from "nodemailer";
+import axios from "axios";
 import { env } from "../config/env";
 import { logger } from "../config/logger";
 
@@ -29,7 +30,37 @@ export const sendEmail = async ({
   subject: string;
   html: string;
 }) => {
-  // 1. Try sending via Nodemailer SMTP if configured
+  // 1. Try sending via Brevo HTTP API if BREVO_API_KEY is configured
+  if (env.BREVO_API_KEY) {
+    try {
+      const fromEmail = env.SMTP_FROM || env.SMTP_USER || "dpkreddy2005@gmail.com";
+      await axios.post(
+        "https://api.brevo.com/v3/smtp/email",
+        {
+          sender: { name: "IncuXai", email: fromEmail },
+          to: [{ email: to }],
+          subject,
+          htmlContent: html
+        },
+        {
+          headers: {
+            "accept": "application/json",
+            "api-key": env.BREVO_API_KEY,
+            "content-type": "application/json"
+          }
+        }
+      );
+      logger.info(`[Brevo API] Email successfully sent to: ${to}`);
+      return;
+    } catch (error: any) {
+      logger.error({ err: error?.response?.data || error }, `[Brevo API] Failed to send email to ${to}`);
+      if (process.env.NODE_ENV === "production" && !resend && !smtpTransporter) {
+        throw error;
+      }
+    }
+  }
+
+  // 2. Try sending via Nodemailer SMTP if configured
   if (smtpTransporter) {
     try {
       const fromEmail = env.SMTP_FROM || env.SMTP_USER;

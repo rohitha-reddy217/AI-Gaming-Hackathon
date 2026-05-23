@@ -27,6 +27,7 @@ const envSchema = z.object({
   SMTP_USER: z.string().optional(),
   SMTP_PASS: z.string().optional(),
   SMTP_FROM: z.string().optional(),
+  BREVO_API_KEY: z.string().optional(),
   DISCORD_CLIENT_ID: requiredString("test"),
   DISCORD_CLIENT_SECRET: requiredString("test"),
   DISCORD_REDIRECT_URI: requiredUrl("http://localhost:3000"),
