@@ -42,11 +42,144 @@ const envSchema = z.object({
   CLOUDINARY_API_SECRET: requiredString("test")
 });
 
-const parsed = envSchema.safeParse(process.env);
+const cleanedEnv = Object.fromEntries(
+  Object.entries(process.env).map(([key, value]) => [
+    key,
+    value === "" || (typeof value === "string" && value.trim() === "") ? undefined : value
+  ])
+);
+
+const ENV_METADATA: Record<string, { description: string; example: string }> = {
+  MONGO_URI: {
+    description: "MongoDB connection string",
+    example: "mongodb+srv://user:pass@cluster.mongodb.net/incuxai"
+  },
+  JWT_SECRET: {
+    description: "Secret for JWT tokens",
+    example: "Any random string (32+ chars)"
+  },
+  NEXTAUTH_SECRET: {
+    description: "NextAuth secret",
+    example: "Any random string (32+ chars)"
+  },
+  COOKIE_SECRET: {
+    description: "Cookie encryption secret",
+    example: "Any random string (32+ chars)"
+  },
+  API_BASE_URL: {
+    description: "Your backend URL",
+    example: "https://incuxai-backend-production.up.railway.app"
+  },
+  WEB_BASE_URL: {
+    description: "Your frontend URL",
+    example: "https://your-frontend-domain.com"
+  },
+  RAZORPAY_KEY_ID: {
+    description: "Razorpay payment key ID",
+    example: "From Razorpay dashboard"
+  },
+  RAZORPAY_KEY_SECRET: {
+    description: "Razorpay secret key",
+    example: "From Razorpay dashboard"
+  },
+  RAZORPAY_WEBHOOK_SECRET: {
+    description: "Razorpay webhook secret",
+    example: "From Razorpay dashboard"
+  },
+  RESEND_API_KEY: {
+    description: "Resend email API key",
+    example: "From Resend dashboard"
+  },
+  RESEND_FROM_EMAIL: {
+    description: "Email sender address",
+    example: "noreply@yourdomain.com"
+  },
+  DISCORD_CLIENT_ID: {
+    description: "Discord OAuth app ID",
+    example: "From Discord Developer Portal"
+  },
+  DISCORD_CLIENT_SECRET: {
+    description: "Discord OAuth secret",
+    example: "From Discord Developer Portal"
+  },
+  DISCORD_REDIRECT_URI: {
+    description: "Discord OAuth redirect URI",
+    example: "https://your-frontend/auth/discord/callback"
+  },
+  DISCORD_GUILD_ID: {
+    description: "Your Discord server ID",
+    example: "Your server's ID"
+  },
+  DISCORD_BOT_TOKEN: {
+    description: "Discord bot token",
+    example: "From Discord Developer Portal"
+  },
+  DISCORD_ANNOUNCEMENTS_CHANNEL_ID: {
+    description: "Channel ID for announcements",
+    example: "Your channel's ID"
+  },
+  DISCORD_MEMBER_ROLE_STUDENT: {
+    description: "Student role ID",
+    example: "Your role's ID"
+  },
+  DISCORD_MEMBER_ROLE_PRO: {
+    description: "Pro member role ID",
+    example: "Your role's ID"
+  },
+  DISCORD_MEMBER_ROLE_STARTUP: {
+    description: "Startup role ID",
+    example: "Your role's ID"
+  },
+  OPENAI_API_KEY: {
+    description: "OpenAI API key",
+    example: "From OpenAI dashboard"
+  },
+  OPENAI_MODEL: {
+    description: "OpenAI model to use",
+    example: "gpt-4o-mini"
+  },
+  CLOUDINARY_CLOUD_NAME: {
+    description: "Cloudinary cloud name",
+    example: "From Cloudinary dashboard"
+  },
+  CLOUDINARY_API_KEY: {
+    description: "Cloudinary API key",
+    example: "From Cloudinary dashboard"
+  },
+  CLOUDINARY_API_SECRET: {
+    description: "Cloudinary API secret",
+    example: "From Cloudinary dashboard"
+  }
+};
+
+const parsed = envSchema.safeParse(cleanedEnv);
 
 if (!parsed.success) {
-  // eslint-disable-next-line no-console
-  console.error("Invalid environment configuration", parsed.error.flatten().fieldErrors);
+  /* eslint-disable no-console */
+  console.error("\n" + "=".repeat(80));
+  console.error("❌ INVALID OR MISSING ENVIRONMENT CONFIGURATION");
+  console.error("=".repeat(80));
+  console.error("The following environment variables are missing, empty, or incorrectly formatted.");
+  console.error("Please update them in your Railway dashboard or local .env file:\n");
+
+  const errors = parsed.error.flatten().fieldErrors;
+  
+  Object.entries(errors).forEach(([field, messages]) => {
+    const metadata = ENV_METADATA[field];
+    const desc = metadata ? metadata.description : "No description available";
+    const example = metadata ? metadata.example : "N/A";
+    const issue = messages ? messages.join(", ") : "Invalid value";
+
+    console.error(`👉 Variable:   \x1b[36m${field}\x1b[0m`);
+    console.error(`   Issue:      \x1b[31m${issue}\x1b[0m`);
+    console.error(`   What it is: ${desc}`);
+    console.error(`   Example:    \x1b[32m${example}\x1b[0m`);
+    console.error("-".repeat(80));
+  });
+
+  console.error("Please configure the required environment variables above and restart the server.");
+  console.error("=".repeat(80) + "\n");
+  /* eslint-enable no-console */
   process.exit(1);
 }
 
